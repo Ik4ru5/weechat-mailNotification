@@ -1,5 +1,6 @@
 import weechat, string
 import simplemail
+import hashlib
 
 weechat.register("mailNotify", "Ik4ru5", "0.1", "UNKOWN", "mailNotify - A Mail notification plugin for weechat", "", "")
 
@@ -10,7 +11,8 @@ settings = {
 	"show_icon"			: "weechat",
 	"from_name"			: "Weechat Messages",
 	"from_mail"			: "",
-	"to"				: ""
+	"to"				: "",
+	"challenge_key"		: ""
 }
 ####################
 # TODO Blacklist! 
@@ -35,10 +37,12 @@ def get_notified(data, bufferp, uber_empty, tagsn, isdisplayed, ishilight, prefi
 		buffer = (weechat.buffer_get_string(bufferp, "short_name") or weechat.buffer_get_string(bufferp, "name"))
 		if buffer == prefix:
 			weechat.prnt('', '[DEBUG][%s]Private Message from %s: %s' % (buffer, prefix, message))
+			authToken = hashlib.md5()
+			authToken.update("s%s%" % (prefix, weechat.config_get_plugin('challenge_key')))
 			simplemail.Email(
 				from_address = u"%s <%s>" % (weechat.config_get_plugin('from_name'), weechat.config_get_plugin('from_mail')),
 				to_address = u"%s" % (weechat.config_get_plugin('to')),
-				subject = u"Message from: %s" % (prefix),
+				subject = u"Message from: %s [%s]" % (prefix, authToken.hexdigest()),
 				message = u"Message from %s: %s" % (prefix, message)).send()
 
 	# Highlighting
