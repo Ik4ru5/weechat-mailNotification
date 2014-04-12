@@ -35,10 +35,13 @@ def get_notified(data, bufferp, uber_empty, tagsn, isdisplayed, ishilight, prefi
 	# Private Message	
 	if (weechat.buffer_get_string(bufferp, "localvar_type") == "private" and weechat.config_get_plugin('show_priv_msg') == "on"):
 		buffer = (weechat.buffer_get_string(bufferp, "short_name") or weechat.buffer_get_string(bufferp, "name"))
+		
 		if buffer == prefix:
 			weechat.prnt('', '[DEBUG][%s]Private Message from %s: %s' % (buffer, prefix, message))
+			
 			authToken = hashlib.md5()
-			authToken.update("s%s%" % (prefix, weechat.config_get_plugin('challenge_key')))
+			authToken.update(prefix + weechat.config_get_plugin('challenge_key'))
+			
 			simplemail.Email(
 				from_address = u"%s <%s>" % (weechat.config_get_plugin('from_name'), weechat.config_get_plugin('from_mail')),
 				to_address = u"%s" % (weechat.config_get_plugin('to')),
@@ -48,7 +51,9 @@ def get_notified(data, bufferp, uber_empty, tagsn, isdisplayed, ishilight, prefi
 	# Highlighting
 	elif (ishilight == "1" and weechat.config_get_plugin('show_highlight') == "on"):
 		buffer = (weechat.buffer_get_string(bufferp, "short_name") or weechat.buffer_get_string(bufferp, "name"))
+		
 		weechat.prnt('', '[DEBUG][%s]Highlight from %s: %s' % (buffer, prefix, message))
+		
 		simplemail.Email(
 				from_address = u"%s <%s>" % (weechat.config_get_plugin('from_name'), weechat.config_get_plugin('from_mail')),
 				to_address = u"%s" % (weechat.config_get_plugin('to')),
