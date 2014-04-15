@@ -46,7 +46,7 @@ def get_notified(data, bufferp, uber_empty, tagsn, isdisplayed, ishilight, prefi
 				from_address = u"%s <%s>" % (weechat.config_get_plugin('from_name'), weechat.config_get_plugin('from_mail')),
 				to_address = u"%s" % (weechat.config_get_plugin('to')),
 				subject = u"Message from: %s [%s]" % (prefix, authToken.hexdigest()),
-				message = u"Message from %s: %s" % (prefix, message)).send()
+				message = u"Message from %s: %s" % (prefix, message.decode('utf-8'))).send()
 
 	# Highlighting
 	elif (ishilight == "1" and weechat.config_get_plugin('show_highlight') == "on"):
@@ -60,7 +60,7 @@ def get_notified(data, bufferp, uber_empty, tagsn, isdisplayed, ishilight, prefi
 				subject = u"Highlight from: %s" % (prefix),
 				message = u'''In Buffer: %s 
 	from %s
-%s''' % (buffer, prefix, message)).send()
+%s''' % (buffer, prefix, message.decode('utf-8'))).send()
 			
 
 	return weechat.WEECHAT_RC_OK
